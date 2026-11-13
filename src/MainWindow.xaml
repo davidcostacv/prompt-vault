@@ -1,0 +1,146 @@
+<Window xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="PromptVault" Width="1080" Height="680" MinWidth="780" MinHeight="460"
+        WindowStartupLocation="CenterScreen"
+        Background="{DynamicResource Bg}" Foreground="{DynamicResource Text}"
+        FontFamily="{StaticResource Ui}" FontSize="13"
+        UseLayoutRounding="True" SnapsToDevicePixels="True">
+  <Grid Background="{DynamicResource Bg}">
+    <Grid.ColumnDefinitions>
+      <ColumnDefinition Width="236"/>
+      <ColumnDefinition Width="300"/>
+      <ColumnDefinition Width="*"/>
+    </Grid.ColumnDefinitions>
+
+    <!-- ========== Barra lateral: marca, buscador, categorías ========== -->
+    <Border Background="{DynamicResource Sidebar}" BorderBrush="{DynamicResource Border}" BorderThickness="0,0,1,0">
+      <DockPanel Margin="14,14,10,12">
+        <Grid DockPanel.Dock="Top" Margin="2,0,0,14">
+          <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+            <Image x:Name="Logo" Width="22" Height="22" RenderOptions.BitmapScalingMode="HighQuality"/>
+            <TextBlock Text="PromptVault" FontSize="15" FontWeight="SemiBold" Margin="9,0,0,0" VerticalAlignment="Center"/>
+          </StackPanel>
+          <Button x:Name="MenuBtn" Style="{StaticResource IconBtn}" HorizontalAlignment="Right" Content="&#xE712;" ToolTip="Opciones"/>
+        </Grid>
+
+        <Grid DockPanel.Dock="Top" Margin="0,0,0,18">
+          <TextBox x:Name="SearchBox" Style="{StaticResource Field}" Padding="30,7,8,7"/>
+          <TextBlock Text="&#xE721;" FontFamily="{StaticResource Icons}" FontSize="13" Foreground="{DynamicResource Muted}"
+                     Margin="11,0,0,0" VerticalAlignment="Center" IsHitTestVisible="False"/>
+          <TextBlock x:Name="SearchHint" Text="Buscar por título" Foreground="{DynamicResource Faint}"
+                     Margin="33,0,0,0" VerticalAlignment="Center" IsHitTestVisible="False"/>
+        </Grid>
+
+        <Grid DockPanel.Dock="Top" Margin="6,0,0,6">
+          <TextBlock Text="CATEGORÍAS" FontSize="11" FontWeight="SemiBold" Foreground="{DynamicResource Muted}" VerticalAlignment="Center"/>
+          <Button x:Name="AddCatBtn" Style="{StaticResource IconBtn}" Width="26" Height="26" FontSize="12"
+                  HorizontalAlignment="Right" Content="&#xE710;" ToolTip="Nueva categoría"/>
+        </Grid>
+
+        <TextBlock x:Name="HotkeyHint" DockPanel.Dock="Bottom" FontSize="11.5" Foreground="{DynamicResource Faint}"
+                   Margin="6,10,0,0" TextWrapping="Wrap"/>
+
+        <ListBox x:Name="CatList" Style="{StaticResource PlainList}">
+          <ListBox.ItemTemplate>
+            <DataTemplate>
+              <Grid>
+                <Grid.ColumnDefinitions>
+                  <ColumnDefinition/>
+                  <ColumnDefinition Width="Auto"/>
+                </Grid.ColumnDefinitions>
+                <TextBlock Text="{Binding Name}" TextTrimming="CharacterEllipsis"/>
+                <TextBlock Grid.Column="1" Text="{Binding Count}" Foreground="{DynamicResource Muted}" FontSize="12" Margin="8,0,0,0"/>
+              </Grid>
+            </DataTemplate>
+          </ListBox.ItemTemplate>
+        </ListBox>
+      </DockPanel>
+    </Border>
+
+    <!-- ========== Lista de prompts ========== -->
+    <Border Grid.Column="1" BorderBrush="{DynamicResource Border}" BorderThickness="0,0,1,0">
+      <DockPanel Margin="12,14,10,12">
+        <Grid DockPanel.Dock="Top" Margin="6,0,0,12" Height="32">
+          <TextBlock x:Name="ListTitle" FontSize="16" FontWeight="SemiBold" TextTrimming="CharacterEllipsis"
+                     VerticalAlignment="Center" Margin="0,0,96,0"/>
+          <Button x:Name="NewBtn" Style="{StaticResource PrimaryBtn}" HorizontalAlignment="Right" ToolTip="Nuevo prompt (Ctrl+N)">
+            <StackPanel Orientation="Horizontal">
+              <TextBlock FontFamily="{StaticResource Icons}" Text="&#xE710;" FontSize="11" VerticalAlignment="Center" Margin="0,0,7,0"/>
+              <TextBlock Text="Nuevo"/>
+            </StackPanel>
+          </Button>
+        </Grid>
+        <Grid>
+          <ListBox x:Name="PromptList" Style="{StaticResource PlainList}" ItemTemplate="{StaticResource PromptRow}"/>
+          <TextBlock x:Name="ListEmpty" TextWrapping="Wrap" TextAlignment="Center" Foreground="{DynamicResource Muted}"
+                     VerticalAlignment="Center" Margin="24" IsHitTestVisible="False" LineHeight="20"/>
+        </Grid>
+      </DockPanel>
+    </Border>
+
+    <!-- ========== Editor ========== -->
+    <Grid Grid.Column="2" Margin="22,14,22,12">
+      <Grid x:Name="EditorPane" Visibility="Collapsed">
+        <Grid.RowDefinitions>
+          <RowDefinition Height="Auto"/>
+          <RowDefinition Height="Auto"/>
+          <RowDefinition Height="*"/>
+          <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+
+        <DockPanel Height="32" LastChildFill="False">
+          <Button x:Name="CatPickBtn" DockPanel.Dock="Left" Style="{StaticResource Btn}" Foreground="{DynamicResource Muted}"
+                  Padding="8,5" ToolTip="Mover a otra categoría">
+            <StackPanel Orientation="Horizontal">
+              <TextBlock FontFamily="{StaticResource Icons}" Text="&#xE8B7;" FontSize="13" VerticalAlignment="Center" Margin="0,0,8,0"/>
+              <TextBlock x:Name="CatPickText" VerticalAlignment="Center"/>
+              <TextBlock FontFamily="{StaticResource Icons}" Text="&#xE70D;" FontSize="9" VerticalAlignment="Center" Margin="8,1,0,0"/>
+            </StackPanel>
+          </Button>
+
+          <Button x:Name="CopyBtn" DockPanel.Dock="Right" Style="{StaticResource PrimaryBtn}" Margin="8,0,0,0"
+                  ToolTip="Copiar texto completo (Ctrl+Enter)">
+            <StackPanel Orientation="Horizontal">
+              <TextBlock FontFamily="{StaticResource Icons}" Text="&#xE8C8;" FontSize="13" VerticalAlignment="Center" Margin="0,0,7,0"/>
+              <TextBlock Text="Copiar"/>
+            </StackPanel>
+          </Button>
+          <Button x:Name="DelBtn" DockPanel.Dock="Right" Style="{StaticResource IconBtn}" Content="&#xE74D;" ToolTip="Eliminar prompt"/>
+          <Button x:Name="DupBtn" DockPanel.Dock="Right" Style="{StaticResource Btn}" Foreground="{DynamicResource Muted}"
+                  Content="Duplicar" ToolTip="Duplicar (Ctrl+D)" Margin="0,0,2,0"/>
+          <ToggleButton x:Name="WrapToggle" DockPanel.Dock="Right" Style="{StaticResource ToggleBtn}" Content="Ajustar líneas"
+                        ToolTip="Partir las líneas largas" Margin="0,0,2,0"/>
+        </DockPanel>
+
+        <Grid Grid.Row="1" Margin="0,14,0,10">
+          <TextBox x:Name="TitleBox" Style="{StaticResource TitleField}"/>
+          <TextBlock x:Name="TitleHint" Text="Título del prompt" FontSize="22" FontWeight="SemiBold"
+                     Foreground="{DynamicResource Faint}" Margin="4,4,0,0" IsHitTestVisible="False"/>
+        </Grid>
+
+        <Grid Grid.Row="2">
+          <TextBox x:Name="BodyBox" Style="{StaticResource CodeBox}"/>
+          <TextBlock x:Name="BodyHint" Text="Escribe o pega tu prompt aquí…" FontFamily="{StaticResource Mono}" FontSize="13.5"
+                     Foreground="{DynamicResource Faint}" Margin="17,13,0,0" VerticalAlignment="Top" IsHitTestVisible="False"/>
+        </Grid>
+
+        <DockPanel Grid.Row="3" Margin="2,10,2,0">
+          <TextBlock x:Name="CountText" DockPanel.Dock="Right" Foreground="{DynamicResource Muted}" FontSize="12"/>
+          <TextBlock x:Name="StatusText" Foreground="{DynamicResource Muted}" FontSize="12" TextTrimming="CharacterEllipsis"/>
+        </DockPanel>
+      </Grid>
+
+      <StackPanel x:Name="EditorEmpty" VerticalAlignment="Center" HorizontalAlignment="Center">
+        <TextBlock Text="Ningún prompt seleccionado" FontSize="16" FontWeight="SemiBold" HorizontalAlignment="Center"/>
+        <TextBlock Text="Crea uno con Ctrl+N o elige uno de la lista." Foreground="{DynamicResource Muted}"
+                   Margin="0,6,0,0" HorizontalAlignment="Center"/>
+      </StackPanel>
+    </Grid>
+
+    <!-- ========== Aviso flotante ("Copiado") ========== -->
+    <Border x:Name="Toast" Grid.ColumnSpan="3" HorizontalAlignment="Center" VerticalAlignment="Bottom" Margin="0,0,0,30"
+            Padding="16,9" CornerRadius="10" Background="{DynamicResource Text}" Opacity="0" IsHitTestVisible="False">
+      <TextBlock x:Name="ToastText" Foreground="{DynamicResource Bg}" FontWeight="SemiBold"/>
+    </Border>
+  </Grid>
+</Window>
